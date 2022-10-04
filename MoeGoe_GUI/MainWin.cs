@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-
+using System.Media;
 namespace MoeGoe_GUI
 {
     public partial class MainWin : Form
@@ -69,7 +69,6 @@ namespace MoeGoe_GUI
             ClearVITS();
             ClearHubertVITS();
         }
-
         private void ClearVITS()
         {
             modelPath.Clear();
@@ -676,6 +675,48 @@ namespace MoeGoe_GUI
         {
             SymbolsWin win = new SymbolsWin(SYMBOLS, textBox);
             win.Show();
+        }
+
+        private void MainWin_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void playButton_Click(object sender, EventArgs e)
+        {
+            SoundPlayer player = new SoundPlayer();
+            player.SoundLocation=SAVEPATH;
+            player.Load();
+            player.Play();
+            player.Dispose();
+        }
+
+        private void saveDirectlyButton_Click(object sender, EventArgs e)
+        {
+            if(SAVEPATH==null)return;
+            if (modelControl.SelectedIndex == 0)
+            {
+                if (modeControl.SelectedIndex == 0)
+                    TTS();
+                else if (modeControl.SelectedIndex == 1)
+                    VC();
+                cmd.Write(SAVEPATH);
+            }
+            else if (modelControl.SelectedIndex == 1)
+            {
+                cmd.Write(ORIGINPATH);
+                cmd.Write(HTargetBox.SelectedIndex.ToString());
+                if (USEF0)
+                    cmd.Write($"[LENGTH={LENGTHSCALE}][NOISE={NOISESCALE}][NOISEW={NOISESCALEW}][F0={F0SCALE}]{SAVEPATH}");
+                else
+                    cmd.Write($"[LENGTH={LENGTHSCALE}][NOISE={NOISESCALE}][NOISEW={NOISESCALEW}]{SAVEPATH}");
+            }
+            cmd.Write("y");
+        }
+
+        private void modelPath_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 
